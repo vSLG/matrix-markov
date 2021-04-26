@@ -114,7 +114,7 @@ class Listener(CallbackGroup):
             return
 
         if (any(
-                re.match(rf"^\s*{re.escape(m)}\W", body)
+                re.match(rf"^\s*(?i){re.escape(m)}\W", body)
                 for m in self.mentions
         )):
             return await self._handle_command(room, event)
@@ -134,7 +134,7 @@ class Listener(CallbackGroup):
         markov_room = self.rooms[room.id]
 
         for mention in self.mentions:
-            regex = rf"^\s*{re.escape(mention)}\W"
+            regex = rf"^\s*(?i){re.escape(mention)}\W"
             if re.match(regex, body):
                 command_body = "".join(re.split(regex, body)[1:])
                 break
