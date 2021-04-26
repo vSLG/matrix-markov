@@ -232,13 +232,28 @@ class Listener(CallbackGroup):
     async def remove(
         self,
         first:  str,
-        second: str,
+        second: str = "",
         *args,
         markov_room: MarkovRoom,
         room:        Room,
         **kwargs,
     ):
         pair = None
+
+        if not second:
+            to_remove = []
+
+            for pair in markov_room.pairs.keys():
+                if first == pair[0] or first == pair[1]:
+                    to_remove.append(pair)
+
+            for pair in to_remove:
+                del markov_room.pairs[pair]
+
+            await markov_room.save()
+            return await room.timeline.send(
+                Notice(f"Removed {len(to_remove)} pairs containing {first}"),
+            )
 
         with suppress(KeyError):
             pair = markov_room.pairs.pop((first, second))
