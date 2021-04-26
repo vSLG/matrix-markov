@@ -208,15 +208,17 @@ class Listener(CallbackGroup):
     @admin
     async def freq(
         self,
-        frequency: float,
+        percentage: str,
         *args,
         markov_room: MarkovRoom,
         room:        Room,
         **kwargs,
     ):
-        markov_room.freq = frequency
+
+        number           = float(percentage.rstrip("%"))
+        markov_room.freq = number / 100
         await markov_room.save()
-        await room.timeline.send(Notice(f"Frequency is now {frequency}"))
+        await room.timeline.send(Notice(f"Frequency is now {number}%"))
 
 
     @admin
