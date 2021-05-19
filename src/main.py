@@ -9,7 +9,6 @@ from pathlib import Path
 
 from mio.client import Client
 from mio.core.data import JSONLoadError
-from mio.core.utils import report
 from mio.net.errors import ServerError
 
 from .callbacks import Listener
@@ -26,8 +25,7 @@ async def login_client(client: Client) -> None:
 
         client.server = homeserver
 
-        with report(ServerError):
-            await client.auth.login_password(user=user_id, password=password)
+        await client.auth.login_password(user=user_id, password=password)
 
     await client.save()
     print()

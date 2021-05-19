@@ -33,11 +33,10 @@ class MarkovRoom(JSONClientModule):
 
     async def register_sentence(self, sentence: str) -> None:
         words = re.split(r"(?![',.\!\?:\-\/\\;\=\@])[\W_]+", sentence)
+        words = [i for i in words if i != ""]
 
         if not words:
             return
-
-        words = [i for i in words if i != ""]
 
         await self._register_pair((None, words[0]))
 
