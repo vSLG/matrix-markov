@@ -53,7 +53,7 @@ class MarkovRoom(JSONClientModule):
     ) -> str:
         assert(word_count > 1)
 
-        final_sentence = [starting_word] if starting_word else []
+        final_sentence = [starting_word] if starting_word else [""]
 
         has_starting_word = False
 
