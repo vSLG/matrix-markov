@@ -15,7 +15,7 @@ from mio.rooms.contents.users import Member
 from mio.rooms.events import StateEvent, TimelineEvent
 from mio.rooms.room import Room
 
-from .commands import RootCommand
+from .commands.general import RootCommand
 from .module import MarkovModule, MarkovRoom
 
 if TYPE_CHECKING:
@@ -42,7 +42,7 @@ class Listener(CallbackGroup):
     async def on_timeline_text(
         self, room: Room, event: TimelineEvent[Textual],
     ):
-        body        = event.content.body
+        body        = event.content.stripped_body
         markov_room = self.rooms[room.id]
 
         print(f"message: {event.sender}: {body}")
@@ -56,11 +56,11 @@ class Listener(CallbackGroup):
                 body = "".join(re.split(regex, body)[1:])
                 return await RootCommand(body, room, event, markov_room)()
 
-        await markov_room.register_sentence(event.content.body)
+        await markov_room.register_sentence(body)
 
         if random.random() < markov_room.freq:
             # TODO: average word count
-            text = await markov_room.generate()
+            text = await markov_room.generate(word_count=20)
             await room.timeline.send(Notice(text))
 
 

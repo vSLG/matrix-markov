@@ -9,7 +9,6 @@ from pathlib import Path
 
 from mio.client import Client
 from mio.core.data import JSONLoadError
-from mio.net.errors import ServerError
 
 from .callbacks import Listener
 from .client import MarkovClient
@@ -35,7 +34,8 @@ async def main():
     print("Matrix markov bot\n")
 
     # Try loading account from disk
-    client = MarkovClient(Path("./account"))
+    # client = MarkovClient(Path(__file__).parents[1] / "account")
+    client = MarkovClient("./account")
 
     try:
         await client.load()
