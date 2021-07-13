@@ -4,9 +4,9 @@
 # Date: 2021-07
 # Copyright (c) 2021 vslg
 
+from asyncio import ensure_future
 from io import BytesIO
 from typing import List
-from asyncio import ensure_future
 
 from mio.media.store import MediaStore
 from mio.rooms.contents.messages import Image, Notice
@@ -60,6 +60,8 @@ class SwirlCommand(MarkovCommand):
 
 
     async def download_and_send(self, image: Image) -> None:
+        angle = int(self.args.pop("<angle>") or 120)
+
         try:
             await self.client.media.download(image.mxc)
         except Exception as e:
@@ -71,10 +73,12 @@ class SwirlCommand(MarkovCommand):
         store: MediaStore = self.client.media
         image_path        = await store._mxc_path(image.mxc).resolve()
 
-        with WImage(filename=image_path) as img:
-            img.swirl(degree=-120)
+        with WImage() as img:
+            with WImage(filename=image_path) as src_img:
+                for frame in src_img.sequence:
+                    frame.swirl(degree=angle)
+                    img.sequence.append(frame)
 
             blob  = BytesIO(img.make_blob())
             media = await Image.from_data(self.client, blob)
             await self.room.timeline.send(media)
-
